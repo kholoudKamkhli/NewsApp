@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:news_app/news/search_screen.dart';
 import 'package:news_app/view/category_data.dart';
 import 'package:news_app/view/category_grid_view.dart';
 import 'package:news_app/view/category_news_list.dart';
@@ -54,6 +55,17 @@ class _HomeViewState extends State<HomeView> {
               bottomRight: Radius.circular(35)
           )
         ),
+        actions: [
+          selectedCategory!=null?InkWell(
+            onTap: (){
+              Navigator.pushNamed(context, SearchScreen.routeName);
+            },
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12.0,vertical: 9.0),
+              child: Icon(Icons.search,size: 22,),
+            ),
+          ):SizedBox(),
+        ],
       ),
       drawer: Drawer(
         child: Column(

@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:news_app/news/Articles.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -20,6 +21,7 @@ class _NewsItemState extends State<NewsItem> {
 
   @override
   Widget build(BuildContext context) {
+    var publishedAt = DateTime.parse(widget.article?.publishedAt??"");
     return InkWell(
       onTap: (){
         setState(() {
@@ -57,7 +59,9 @@ class _NewsItemState extends State<NewsItem> {
               alignment: Alignment.centerRight,
               margin: EdgeInsets.symmetric(vertical: 5,horizontal: 15),
               color: Colors.transparent,
-              child: Text(widget.article?.publishedAt??"",textAlign: TextAlign.end,),
+              child: Text("${showPublishedAt(widget.article!)}",textAlign: TextAlign.end,style: TextStyle(
+                color: Colors.black54
+              ),),
             ),
             Container(
               margin: EdgeInsets.symmetric(vertical: 5,horizontal: 15),
@@ -95,7 +99,10 @@ children: [
         alignment: Alignment.centerRight,
         margin: EdgeInsets.symmetric(vertical: 5,horizontal: 15),
         color: Colors.transparent,
-        child: Text(widget.article?.publishedAt??"",textAlign: TextAlign.end,),
+    //widget.article?.publishedAt??""
+        child: Text("${showPublishedAt(widget.article!)}",textAlign: TextAlign.end,style: TextStyle(
+            color: Colors.black54
+        ),),
   ),
   Container(
         margin: EdgeInsets.symmetric(vertical: 5,horizontal: 15),
@@ -109,7 +116,7 @@ children: [
   ),
   InkWell(
     onTap: (){
-      _launchURL(widget?.article?.url??"");
+      _launchUrl(Uri.parse("${widget.article?.url??""}"));
     },
     child: Container(
       margin: EdgeInsets.all(5),
@@ -129,11 +136,27 @@ children: [
       ),
     );
   }
-  _launchURL(String url) async {
-    if (await canLaunchUrl(Uri.parse(url))) {
-      await launchUrl(Uri.parse(url));
-    } else {
-      throw 'Could not launch $url';
+  Future<void> _launchUrl(Uri url) async {
+
+    if (!await launchUrl(url)) {
+      throw Exception('Could not launch $url');
     }
+  }
+  showPublishedAt(Articles article){
+    var dateTime = DateTime.now();
+    var difference = dateTime.difference(DateTime.parse(article.publishedAt??"")).inMinutes;
+    if(difference<0){
+      difference = dateTime.difference(DateTime.parse(article.publishedAt??"")).inSeconds;
+      return "${difference} seconds ago";
+    }
+    if(difference > 0 && difference <60){
+      return "${difference} minutes ago";
+    }
+    if(difference>=60 && difference < (24*60)){
+      difference = dateTime.difference(DateTime.parse(article.publishedAt??"")).inHours;
+      return "${difference} hours ago";
+    }
+    else //difference = dateTime.difference(DateTime.parse(article.publishedAt??"")).inDays;
+    return DateFormat.yMd().format(DateTime.parse(article.publishedAt??""));
   }
 }

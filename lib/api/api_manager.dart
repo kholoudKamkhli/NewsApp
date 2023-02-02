@@ -20,10 +20,11 @@ class ApiManager{
 
   }
   //https://newsapi.org/v2/everything?sources=bbc-sport&apiKey=6a41762a0a394adbb40feead9c17d45c
-  static Future<NewsResponse>getNews(String sourceID)async{
+  static Future<NewsResponse>getNews({String? sourceID,String? q})async{
     var url = Uri.https(baseUrl,"/v2/everything",{
       'apiKey': apiKey,
       'sources':sourceID,
+      'q':q,
     });
     var response = await http.get(url);
     var responseBody = response.body;
